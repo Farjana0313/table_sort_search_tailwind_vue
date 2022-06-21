@@ -60,21 +60,44 @@ export default {
     }
   },
   methods: {
+    sortRecords(index) {
+      if (this.sortIndex === index) {
+        switch (this.sortDirection) {
+          case null:
+            this.sortDirection = 'asc';
+            break;
+          case 'asc':
+            this.sortDirection = 'desc';
+            break;
+          case 'desc':
+            this.sortDirection = null;
+            break;
+        }
+      } else {
+        this.sortDirection = 'asc'
+      }
+
+      this.sortIndex = index;
+      if (!this.sortDirection) {
+        this.rows = this.rowRows;
+        return;
+      }
+      this.rows = this.rows.sort(
+        (rowA, rowB) => {
+          if (this.sortDirection === 'desc') {
+            return rowB[index].localeCompare(rowA[index]);
+          }
+          return rowA[index].localeCompare(rowB[index]);
+        }
+      )
+    },
     onSearch(e) {
       const term = e.target.value;
       this.rows = performSearch(this.rawRows, term);
     },
-    sortRecords(index) {
-      this.sortIndex = index;
-      this.rows = this.rows.sort(
-        (rowA, rowB) => {
-          return rowA[index].localeCompare(rowB[index])
-        }
-      )
-    }
   },
   mounted() {
-    this.rows = this.rawRows;
+    this.rows = [...this.rawRows];
   }
 }
 </script>
